@@ -4,7 +4,8 @@ Canek Peláez Valdés de la Facultad de Ciencias de la UNAM.
 
 ## Prácticas
 El curso se repartió en 10 prácticas, cada una enfocada en un tema para la
-enseñanza de programación orientada a objetos y de programación en general.
+enseñanza de programación orientada a objetos y de programación en general. Las
+prácticas son las siguientes:
 
 1. [Orientación a Objetos y sintaxis de Java](practica1)
 2. [Estructuras de control y listas](practica2) 
