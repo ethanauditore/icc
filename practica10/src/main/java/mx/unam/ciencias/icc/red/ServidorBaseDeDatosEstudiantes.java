@@ -30,6 +30,6 @@ public class ServidorBaseDeDatosEstudiantes
      */
     @Override public
     BaseDeDatos<Estudiante, CampoEstudiante> creaBaseDeDatos() {
-        // Aquí va su código.
+        return new BaseDeDatosEstudiantes();
     }
 }

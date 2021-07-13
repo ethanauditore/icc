@@ -44,7 +44,13 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si ocurre un error de entrada o salida.
      */
     public Conexion(BaseDeDatos<R, ?> bdd, Socket enchufe) throws IOException {
-        // Aquí va su código.
+        this.bdd = bdd;
+        this.enchufe = enchufe;
+        in = new BufferedReader(new InputStreamReader(enchufe.getInputStream()));
+        out = new BufferedWriter(new OutputStreamWriter(enchufe.getOutputStream()));
+        escuchas = new Lista<EscuchaConexion<R>>();
+        activa = true;
+        serial = contadorSerial++;
     }
 
     /**
@@ -53,7 +59,17 @@ public class Conexion<R extends Registro<R, ?>> {
      * que lea en mensajes y reportará cada uno a los escuchas.
      */
     public void recibeMensajes() {
-        // Aquí va su código.
+        String linea = "";
+        try {
+            while ((linea = in.readLine()) != null)
+                avisaEscuchas(Mensaje.getMensaje(linea));
+        } catch (IOException ioe) {}
+        avisaEscuchas(Mensaje.DESCONECTAR);
+    }
+
+    private void avisaEscuchas(Mensaje mensaje) {
+        for (EscuchaConexion<R> escucha : escuchas)
+            escucha.mensajeRecibido(this, mensaje);
     }
 
     /**
@@ -61,7 +77,7 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si la base de datos no puede recibirse.
      */
     public void recibeBaseDeDatos() throws IOException {
-        // Aquí va su código.
+        bdd.carga(in);
     }
 
     /**
@@ -69,7 +85,9 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si la base de datos no puede enviarse.
      */
     public void enviaBaseDeDatos() throws IOException {
-        // Aquí va su código.
+        bdd.guarda(out);
+        out.newLine();
+        out.flush();
     }
 
     /**
@@ -78,7 +96,9 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si el registro no puede recibirse.
      */
     public R recibeRegistro() throws IOException {
-        // Aquí va su código.
+        R r = bdd.creaRegistro();
+        r.deserializa(in.readLine());
+        return r;
     }
 
     /**
@@ -87,7 +107,8 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si el registro no puede enviarse.
      */
     public void enviaRegistro(R registro) throws IOException {
-        // Aquí va su código.
+        out.write(registro.serializa());
+        out.flush();
     }
 
     /**
@@ -96,7 +117,9 @@ public class Conexion<R extends Registro<R, ?>> {
      * @throws IOException si el mensaje no puede enviarse.
      */
     public void enviaMensaje(Mensaje mensaje) throws IOException {
-        // Aquí va su código.
+        out.write(mensaje.toString());
+        out.newLine();
+        out.flush();
     }
 
     /**
@@ -104,14 +127,17 @@ public class Conexion<R extends Registro<R, ?>> {
      * @return un número serial para cada conexión.
      */
     public int getSerial() {
-        // Aquí va su código.
+        return serial;
     }
 
     /**
      * Cierra la conexión.
      */
     public void desconecta() {
-        // Aquí va su código.
+        try {
+            activa = false;
+            enchufe.close();
+        } catch (IOException ioe) {}
     }
 
     /**
@@ -120,7 +146,7 @@ public class Conexion<R extends Registro<R, ?>> {
      *         otro caso.
      */
     public boolean isActiva() {
-        // Aquí va su código.
+        return activa;
     }
 
     /**
@@ -128,6 +154,6 @@ public class Conexion<R extends Registro<R, ?>> {
      * @param escucha el escucha a agregar.
      */
     public void agregaEscucha(EscuchaConexion<R> escucha) {
-        // Aquí va su código.
+        escuchas.agregaFinal(escucha);
     }
 }

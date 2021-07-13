@@ -69,7 +69,20 @@ public enum Mensaje {
      * @return el mensaje correspondiente a la línea.
      */
     public static Mensaje getMensaje(String mensaje) {
-        // Aquí va su código.
+        if (!mensaje.contains(PREFIJO))
+            return INVALIDO;
+        mensaje = mensaje.replace(PREFIJO, "");
+        switch (mensaje) {
+        case "BASE_DE_DATOS": return BASE_DE_DATOS;
+        case "REGISTRO_AGREGADO": return REGISTRO_AGREGADO;
+        case "REGISTRO_ELIMINADO": return REGISTRO_ELIMINADO;
+        case "REGISTRO_MODIFICADO": return REGISTRO_MODIFICADO;
+        case "DESCONECTAR": return DESCONECTAR;
+        case "DETENER_SERVICIO": return DETENER_SERVICIO;
+        case "ECO": return ECO;
+        case "INVALIDO": return INVALIDO;
+        default: return INVALIDO;
+        }
     }
 
     /**
@@ -77,6 +90,17 @@ public enum Mensaje {
      * @return la cadena con el mensaje correspondiente al mensaje.
      */
     public String toString() {
-        // Aquí va su código.
+        String s = PREFIJO;
+        switch (this) {
+        case BASE_DE_DATOS:       s += "BASE_DE_DATOS";       break;
+        case REGISTRO_AGREGADO:   s += "REGISTRO_AGREGADO";   break;
+        case REGISTRO_ELIMINADO:  s += "REGISTRO_ELIMINADO";  break;
+        case REGISTRO_MODIFICADO: s += "REGISTRO_MODIFICADO"; break;
+        case DESCONECTAR:         s += "DESCONECTAR";         break;
+        case DETENER_SERVICIO:    s += "DETENER_SERVICIO";    break;
+        case ECO:                 s += "ECO";                 break;
+        case INVALIDO:            s += "INVALIDO";            break;
+        }
+        return s;
     }
 }
