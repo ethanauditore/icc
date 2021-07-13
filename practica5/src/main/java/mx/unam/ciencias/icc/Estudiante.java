@@ -29,7 +29,10 @@ public class Estudiante implements Registro {
                       int    cuenta,
                       double promedio,
                       int    edad) {
-        // Aquí va su código.
+        this.nombre   = nombre;
+        this.cuenta   = cuenta;
+        this.promedio = promedio;
+        this.edad     = edad;
     }
 
     /**
@@ -37,7 +40,7 @@ public class Estudiante implements Registro {
      * @return el nombre del estudiante.
      */
     public String getNombre() {
-        // Aquí va su código.
+        return nombre;
     }
 
     /**
@@ -45,7 +48,7 @@ public class Estudiante implements Registro {
      * @param nombre el nuevo nombre del estudiante.
      */
     public void setNombre(String nombre) {
-        // Aquí va su código.
+        this.nombre = nombre;
     }
 
     /**
@@ -53,7 +56,7 @@ public class Estudiante implements Registro {
      * @return el número de cuenta del estudiante.
      */
     public int getCuenta() {
-        // Aquí va su código.
+        return cuenta;
     }
 
     /**
@@ -61,7 +64,7 @@ public class Estudiante implements Registro {
      * @param cuenta el nuevo número de cuenta del estudiante.
      */
     public void setCuenta(int cuenta) {
-        // Aquí va su código.
+        this.cuenta = cuenta;
     }
 
     /**
@@ -69,7 +72,7 @@ public class Estudiante implements Registro {
      * @return el promedio del estudiante.
      */
     public double getPromedio() {
-        // Aquí va su código.
+        return promedio;
     }
 
     /**
@@ -77,7 +80,7 @@ public class Estudiante implements Registro {
      * @param promedio el nuevo promedio del estudiante.
      */
     public void setPromedio(double promedio) {
-        // Aquí va su código.
+        this.promedio = promedio;
     }
 
     /**
@@ -85,7 +88,7 @@ public class Estudiante implements Registro {
      * @return la edad del estudiante.
      */
     public int getEdad() {
-        // Aquí va su código.
+        return edad;
     }
 
     /**
@@ -93,7 +96,7 @@ public class Estudiante implements Registro {
      * @param edad la nueva edad del estudiante.
      */
     public void setEdad(int edad) {
-        // Aquí va su código.
+        this.edad = edad;
     }
 
     /**
@@ -101,8 +104,11 @@ public class Estudiante implements Registro {
      * @return una representación en cadena del estudiante.
      */
     @Override public String toString() {
-        // Aquí va su código.
-    }
+        return String.format("Nombre   : %s\n" +
+                             "Cuenta   : %09d\n" +
+                             "Promedio : %2.2f\n" +
+                             "Edad     : %d",
+                             nombre, cuenta, promedio, edad);}
 
     /**
      * Nos dice si el objeto recibido es un estudiante igual al que manda llamar
@@ -116,7 +122,10 @@ public class Estudiante implements Registro {
         if (!(objeto instanceof Estudiante))
             return false;
         Estudiante estudiante = (Estudiante)objeto;
-        // Aquí va su código.
+        return nombre.equals(estudiante.nombre)
+            && cuenta == estudiante.cuenta
+            && promedio == estudiante.promedio
+            && edad == estudiante.edad;
     }
 
     /**
@@ -126,7 +135,8 @@ public class Estudiante implements Registro {
      * @return la serialización del estudiante en una línea de texto.
      */
     @Override public String serializa() {
-        // Aquí va su código.
+        return String.format("%s\t%d\t%2.2f\t%d\n",
+                             nombre, cuenta, promedio, edad);
     }
 
     /**
@@ -138,7 +148,20 @@ public class Estudiante implements Registro {
      *         es una serialización válida de un estudiante.
      */
     @Override public void deserializa(String linea) {
-        // Aquí va su código.
+        if (linea == null || linea.isEmpty())
+            throw new ExcepcionLineaInvalida();
+        linea = linea.trim();
+        String[] s = linea.split("\t");
+        if (s.length != 4)
+            throw new ExcepcionLineaInvalida();
+        nombre = s[0];
+        try {
+            cuenta = Integer.valueOf(s[1]);
+            promedio = Double.valueOf(s[2]);
+            edad = Integer.valueOf(s[3]);
+        } catch (NumberFormatException nfe) {
+            throw new ExcepcionLineaInvalida();
+        }
     }
 
     /**
@@ -152,7 +175,10 @@ public class Estudiante implements Registro {
             throw new IllegalArgumentException("El registro debe ser " +
                                                "Estudiante");
         Estudiante estudiante = (Estudiante)registro;
-        // Aquí va su código.
+        this.nombre = estudiante.nombre;
+        this.cuenta = estudiante.cuenta;
+        this.promedio = estudiante.promedio;
+        this.edad = estudiante.edad;
     }
 
     /**
@@ -182,6 +208,48 @@ public class Estudiante implements Registro {
      *         CampoEstudiante}.
      */
     public boolean caza(Enum campo, Object valor) {
-        // Aquí va su código.
+        if (!(campo instanceof CampoEstudiante))
+            throw new IllegalArgumentException();
+        CampoEstudiante c = (CampoEstudiante) campo;
+        switch (c) {
+		case NOMBRE:
+            return cazaNombre(valor);
+		case CUENTA:
+            return cazaCuenta(valor);
+		case PROMEDIO:
+            return cazaPromedio(valor);
+		case EDAD:
+            return cazaEdad(valor);
+		default:
+            return false;
+        }
+    }
+
+    private boolean cazaNombre(Object valor) {
+        if (!(valor instanceof String))
+            return false;
+        String s = (String) valor;
+        return !s.isEmpty() && nombre.indexOf(s) != -1;
+    }
+
+    private boolean cazaCuenta(Object valor) {
+        if (!(valor instanceof Integer))
+            return false;
+        Integer n = (Integer) valor;
+        return n <= cuenta;
+    }
+
+    private boolean cazaPromedio(Object valor) {
+        if (!(valor instanceof Double))
+            return false;
+        Double n = (Double) valor;
+        return n <= promedio;
+    }
+
+    private boolean cazaEdad(Object valor) {
+        if (!(valor instanceof Integer))
+            return false;
+        Integer n = (Integer) valor;
+        return n <= edad;
     }
 }

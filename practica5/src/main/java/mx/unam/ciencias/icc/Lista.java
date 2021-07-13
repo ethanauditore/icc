@@ -28,7 +28,7 @@ public class Lista {
 
         /* Construye un nodo con un elemento. */
         private Nodo(Object elemento) {
-            // Aquí va su código.
+            this.elemento = elemento;
         }
 
         /**
@@ -36,7 +36,7 @@ public class Lista {
          * @return el nodo anterior del nodo.
          */
         public Nodo getAnterior() {
-            // Aquí va su código.
+            return anterior;
         }
 
         /**
@@ -44,7 +44,7 @@ public class Lista {
          * @return el nodo siguiente del nodo.
          */
         public Nodo getSiguiente() {
-            // Aquí va su código.
+            return siguiente;
         }
 
         /**
@@ -52,7 +52,7 @@ public class Lista {
          * @return el elemento del nodo.
          */
         public Object get() {
-            // Aquí va su código.
+			return elemento;
         }
     }
 
@@ -68,7 +68,7 @@ public class Lista {
      * @return la longitud de la lista, el número de elementos que contiene.
      */
     public int getLongitud() {
-        // Aquí va su código.
+        return longitud;
     }
 
     /**
@@ -77,7 +77,7 @@ public class Lista {
      *         otro caso.
      */
     public boolean esVacia() {
-        // Aquí va su código.
+        return cabeza == null;
     }
 
     /**
@@ -88,7 +88,16 @@ public class Lista {
      *         <code>null</code>.
      */
     public void agregaFinal(Object elemento) {
-        // Aquí va su código.
+        if (elemento == null)
+            throw new IllegalArgumentException();
+        Nodo n = new Nodo(elemento);
+        longitud++;
+        n.anterior = rabo;
+        if (rabo == null)
+            cabeza = n;
+        else
+            rabo.siguiente = n;
+        rabo = n;
     }
 
     /**
@@ -99,7 +108,16 @@ public class Lista {
      *         <code>null</code>.
      */
     public void agregaInicio(Object elemento) {
-        // Aquí va su código.
+        if (elemento == null)
+            throw new IllegalArgumentException();
+        Nodo n = new Nodo(elemento);
+        longitud++;
+        n.siguiente = cabeza;
+        if (cabeza == null)
+            rabo = n;
+        else
+            cabeza.anterior = n;
+        cabeza = n;
     }
 
     /**
@@ -118,7 +136,29 @@ public class Lista {
      *         <code>null</code>.
      */
     public void inserta(int i, Object elemento) {
-        // Aquí va su código.
+        if (elemento == null)
+            throw new IllegalArgumentException();
+        else if (i < 1)
+            agregaInicio(elemento);
+        else if (i > longitud - 1)
+            agregaFinal(elemento);
+        else {
+            longitud++;
+            Nodo n = new Nodo(elemento);
+            Nodo s = getIesimo(i);
+            n.anterior = s.anterior;
+            s.anterior.siguiente = n;
+            n.siguiente = s;
+            s.anterior = n;
+        }
+    }
+
+    private Nodo getIesimo(int i) {
+        Nodo n = cabeza;
+        for (int j = 0; j < i; j++) {
+            n = n.siguiente;
+        }
+        return n;
     }
 
     /**
@@ -127,7 +167,36 @@ public class Lista {
      * @param elemento el elemento a eliminar.
      */
     public void elimina(Object elemento) {
-        // Aquí va su código.
+        Nodo n = buscaNodo(elemento);
+        if (n == null)
+            return;
+        eliminaNodo(n);
+    }
+
+    private Nodo buscaNodo(Object elemento) {
+        Nodo n = cabeza;
+        while (n != null) {
+            if (n.elemento.equals(elemento))
+                return n;
+            n = n.siguiente;
+        }
+        return null;
+    }
+
+    private void eliminaNodo(Nodo n) {
+        longitud--;
+        if (cabeza == rabo)
+            cabeza = rabo = null;
+        else if (n == cabeza) {
+            n.siguiente.anterior = null;
+            cabeza = n.siguiente;
+        } else if (n == rabo) {
+            n.anterior.siguiente = null;
+            rabo = n.anterior;
+        } else {
+            n.siguiente.anterior = n.anterior;
+            n.anterior.siguiente = n.siguiente;
+        }
     }
 
     /**
@@ -136,7 +205,11 @@ public class Lista {
      * @throws NoSuchElementException si la lista es vacía.
      */
     public Object eliminaPrimero() {
-        // Aquí va su código.
+        if (cabeza == null)
+            throw new NoSuchElementException();
+        Object o = cabeza.elemento;
+        eliminaNodo(cabeza);
+        return o;
     }
 
     /**
@@ -145,7 +218,11 @@ public class Lista {
      * @throws NoSuchElementException si la lista es vacía.
      */
     public Object eliminaUltimo() {
-        // Aquí va su código.
+        if (rabo == null)
+            throw new NoSuchElementException();
+        Object o = rabo.elemento;
+        eliminaNodo(rabo);
+        return o;
     }
 
     /**
@@ -155,7 +232,7 @@ public class Lista {
      *         <code>false</code> en otro caso.
      */
     public boolean contiene(Object elemento) {
-        // Aquí va su código.
+        return buscaNodo(elemento) != null;
     }
 
     /**
@@ -163,7 +240,13 @@ public class Lista {
      * @return una nueva lista que es la reversa la que manda llamar el método.
      */
     public Lista reversa() {
-        // Aquí va su código.
+        Lista l = new Lista();
+        Nodo n = cabeza;
+        while (n != null) {
+           l.agregaInicio(n.elemento);
+           n = n.siguiente;
+        }
+        return l;
     }
 
     /**
@@ -172,14 +255,21 @@ public class Lista {
      * @return una copiad de la lista.
      */
     public Lista copia() {
-        // Aquí va su código.
+        Lista l = new Lista();
+        Nodo n = cabeza;
+        while (n != null) {
+           l.agregaFinal(n.elemento);
+           n = n.siguiente;
+        }
+        return l;
     }
 
     /**
      * Limpia la lista de elementos, dejándola vacía.
      */
     public void limpia() {
-        // Aquí va su código.
+        cabeza = rabo = null;
+        longitud = 0;
     }
 
     /**
@@ -188,7 +278,9 @@ public class Lista {
      * @throws NoSuchElementException si la lista es vacía.
      */
     public Object getPrimero() {
-        // Aquí va su código.
+        if (cabeza == null)
+            throw new NoSuchElementException();
+        return cabeza.elemento;
     }
 
     /**
@@ -197,7 +289,9 @@ public class Lista {
      * @throws NoSuchElementException si la lista es vacía.
      */
     public Object getUltimo() {
-        // Aquí va su código.
+        if (rabo == null)
+            throw new NoSuchElementException();
+        return rabo.elemento;
     }
 
     /**
@@ -208,7 +302,9 @@ public class Lista {
      *         igual que el número de elementos en la lista.
      */
     public Object get(int i) {
-        // Aquí va su código.
+        if (i < 0 || i >= longitud)
+            throw new ExcepcionIndiceInvalido();
+        return getIesimo(i).elemento;
     }
 
     /**
@@ -218,7 +314,15 @@ public class Lista {
      *         no está contenido en la lista.
      */
     public int indiceDe(Object elemento) {
-        // Aquí va su código.
+        int i = 0;
+        Nodo n = cabeza;
+        while (n != null) {
+            if (n.elemento.equals(elemento))
+                return i;
+            n = n.siguiente;
+            i++;
+        }
+        return -1;
     }
 
     /**
@@ -226,7 +330,15 @@ public class Lista {
      * @return una representación en cadena de la lista.
      */
     @Override public String toString() {
-        // Aquí va su código.
+        if (cabeza == null)
+            return "[]";
+        String s = "[" + cabeza.elemento;
+        Nodo n = cabeza.siguiente;
+        while (n != null) {
+            s += ", " + n.elemento;
+            n = n.siguiente;
+        }
+        return s + "]";
     }
 
     /**
@@ -239,7 +351,19 @@ public class Lista {
         if (!(objeto instanceof Lista))
             return false;
         Lista lista = (Lista)objeto;
-        // Aquí va su código.
+        if (longitud != lista.longitud)
+            return false;
+        Nodo n1 = cabeza;
+        Nodo n2 = lista.cabeza;
+        while (n1 != null) {
+            if (!n1.elemento.equals(n2.elemento))
+                return false;
+            else {
+                n1 = n1.siguiente;
+                n2 = n2.siguiente;
+            }
+        }
+        return true;
     }
 
     /**
@@ -247,7 +371,7 @@ public class Lista {
      * @return el nodo cabeza de la lista.
      */
     public Nodo getCabeza() {
-        // Aquí va su código.
+        return cabeza;
     }
 
     /**
@@ -255,6 +379,6 @@ public class Lista {
      * @return el nodo rabo de la lista.
      */
     public Nodo getRabo() {
-        // Aquí va su código.
+        return rabo;
     }
 }
